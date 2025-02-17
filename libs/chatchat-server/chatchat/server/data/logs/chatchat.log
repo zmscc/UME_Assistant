@@ -1,0 +1,10 @@
+2024-12-12 09:38:14.570 | WARNING  | __main__:detect_xf_models:107 - cannot connect to xinference host: http://127.0.0.1:9997, please check your configuration.
+2024-12-12 09:38:14.571 | WARNING  | __main__:get_default_llm:205 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-12 09:38:14.579 | WARNING  | __main__:get_default_llm:205 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-12 09:38:14.579 | WARNING  | __main__:get_default_embedding:214 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-12 14:02:14.605 | WARNING  | __main__:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen2-instruct instead
+2024-12-12 14:02:14.613 | WARNING  | __main__:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen2-instruct instead
+2024-12-12 14:03:50.701 | WARNING  | __main__:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen2-instruct instead
+2024-12-12 14:03:50.711 | WARNING  | __main__:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen2-instruct instead
+2024-12-12 14:05:11.088 | WARNING  | __main__:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen2-instruct instead
+2024-12-12 14:05:11.095 | WARNING  | __main__:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen2-instruct instead

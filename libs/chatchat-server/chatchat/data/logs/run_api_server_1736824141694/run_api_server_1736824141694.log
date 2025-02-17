@@ -1,0 +1,10 @@
+2025-01-14 13:16:25,534 openai._base_client 16672 INFO     Retrying request to /chat/completions in 0.386382 seconds
+2025-01-14 13:16:27,959 openai._base_client 16672 INFO     Retrying request to /chat/completions in 0.988857 seconds
+2025-01-14 13:22:24,439 httpx        16672 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/embeddings "HTTP/1.1 200 OK"
+2025-01-14 13:22:24,654 httpx        16672 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/embeddings "HTTP/1.1 200 OK"
+2025-01-14 13:22:27,483 openai._base_client 16672 INFO     Retrying request to /chat/completions in 0.410792 seconds
+2025-01-14 13:22:29,939 openai._base_client 16672 INFO     Retrying request to /chat/completions in 0.759999 seconds
+2025-01-14 13:22:52,090 httpx        16672 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/embeddings "HTTP/1.1 200 OK"
+2025-01-14 13:22:52,390 httpx        16672 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/embeddings "HTTP/1.1 200 OK"
+2025-01-14 13:22:54,524 openai._base_client 16672 INFO     Retrying request to /chat/completions in 0.471474 seconds
+2025-01-14 13:22:57,042 openai._base_client 16672 INFO     Retrying request to /chat/completions in 0.950495 seconds

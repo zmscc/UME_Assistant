@@ -1,0 +1,8 @@
+2025-01-14 14:25:43,950 httpx        32988 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/embeddings "HTTP/1.1 200 OK"
+2025-01-14 14:25:44,234 httpx        32988 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/embeddings "HTTP/1.1 200 OK"
+2025-01-14 14:25:44,657 httpx        32988 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/embeddings "HTTP/1.1 200 OK"
+2025-01-14 14:25:44,920 httpx        32988 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/chat/completions "HTTP/1.1 200 OK"
+2025-01-14 14:26:09,795 httpx        32988 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/embeddings "HTTP/1.1 200 OK"
+2025-01-14 14:26:10,047 httpx        32988 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/embeddings "HTTP/1.1 200 OK"
+2025-01-14 14:26:10,422 httpx        32988 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/embeddings "HTTP/1.1 200 OK"
+2025-01-14 14:26:10,598 httpx        32988 INFO     HTTP Request: POST http://127.0.0.1:9997/v1/chat/completions "HTTP/1.1 200 OK"

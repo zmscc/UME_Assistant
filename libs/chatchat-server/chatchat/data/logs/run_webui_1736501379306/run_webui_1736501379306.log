@@ -1,0 +1,5 @@
+2025-01-10 17:29:44,284 httpx        8464 INFO     HTTP Request: GET http://127.0.0.1:7861/tools "HTTP/1.1 200 OK"
+2025-01-10 17:30:07,251 langchain_community.vectorstores.milvus 8464 ERROR    Failed to create new connection using: 920ec49745f44997bdd57f64419fdd7c
+2025-01-10 17:30:07,253 langchain_community.vectorstores.milvus 8464 ERROR    Failed to create new connection using: 4eb3f8388cca4f06b29fe56f82d0c049
+2025-01-10 17:30:25,634 httpx        8464 INFO     HTTP Request: POST http://127.0.0.1:7861/knowledge_base/create_knowledge_base "HTTP/1.1 500 Internal Server Error"
+2025-01-10 17:30:50,614 httpx        8464 INFO     HTTP Request: POST http://127.0.0.1:7861/knowledge_base/create_knowledge_base "HTTP/1.1 500 Internal Server Error"

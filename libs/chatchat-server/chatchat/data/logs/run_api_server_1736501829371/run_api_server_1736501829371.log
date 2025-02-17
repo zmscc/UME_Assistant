@@ -1,0 +1,2 @@
+2025-01-10 17:40:09,710 langchain_community.vectorstores.milvus 3716 ERROR    Failed to create new connection using: f40d7ae3ca32428f8ae9787db1e08004
+2025-01-10 17:40:25,923 langchain_community.vectorstores.milvus 3716 ERROR    Failed to create new connection using: 1054600fee254d33b0e5b42344ee177a

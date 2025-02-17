@@ -1,0 +1,70 @@
+2024-12-16 17:18:50.807 | WARNING  | chatchat.server.utils:detect_xf_models:109 - cannot connect to xinference host: http://127.0.0.1:9997, please check your configuration.
+2024-12-16 17:18:50.807 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-16 17:18:50.818 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-16 17:18:52.640 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-16 17:18:52.642 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-16 17:18:52.667 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-16 17:18:52.667 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-16 17:18:52.668 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-16 17:18:52.668 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-16 17:18:52.672 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-16 17:18:52.904 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:01:19.656 | WARNING  | chatchat.server.utils:detect_xf_models:109 - cannot connect to xinference host: http://127.0.0.1:9997, please check your configuration.
+2024-12-17 14:01:19.658 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-17 14:01:19.693 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-17 14:01:21.797 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:01:21.799 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:01:21.822 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:01:21.823 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:01:21.823 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:01:21.823 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:01:21.827 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:01:22.123 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:05:27.452 | WARNING  | chatchat.server.utils:detect_xf_models:109 - cannot connect to xinference host: http://127.0.0.1:9997, please check your configuration.
+2024-12-17 14:05:27.453 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-17 14:05:27.464 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-17 14:05:28.834 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:05:28.836 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:05:28.850 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:05:28.851 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:05:28.851 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:05:28.851 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:05:28.855 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:05:29.062 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 14:05:57.715 | WARNING  | chatchat.server.utils:detect_xf_models:109 - cannot connect to xinference host: http://127.0.0.1:9997, please check your configuration.
+2024-12-17 14:05:57.716 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-17 14:06:49.025 | WARNING  | chatchat.server.utils:detect_xf_models:109 - cannot connect to xinference host: http://127.0.0.1:9997, please check your configuration.
+2024-12-17 14:06:49.026 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-17 15:09:54.817 | WARNING  | chatchat.server.utils:detect_xf_models:109 - cannot connect to xinference host: http://127.0.0.1:9997, please check your configuration.
+2024-12-17 15:09:54.819 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-17 15:09:54.857 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-17 15:09:56.785 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 15:09:56.788 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 15:09:56.806 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 15:09:56.807 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 15:09:56.807 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 15:09:56.808 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 15:09:56.811 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-17 15:09:57.145 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:33:43.525 | WARNING  | chatchat.server.utils:detect_xf_models:109 - cannot connect to xinference host: http://127.0.0.1:9997, please check your configuration.
+2024-12-24 13:33:43.525 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-24 13:33:43.525 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-24 13:33:45.965 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:33:45.965 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:33:45.996 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:33:45.996 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:33:45.996 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:33:45.996 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:33:45.996 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:33:46.307 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:39:54.438 | WARNING  | chatchat.server.utils:detect_xf_models:109 - cannot connect to xinference host: http://127.0.0.1:9997, please check your configuration.
+2024-12-24 13:39:54.438 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-24 13:39:54.485 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
+2024-12-24 13:39:57.985 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:39:58.002 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:39:58.033 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:39:58.033 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:39:58.033 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:39:58.033 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:39:58.033 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2024-12-24 13:39:58.434 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
