@@ -29,16 +29,16 @@ logger = build_logger()
 
 
 async def kb_chat(query: str = Body(..., description="用户输入", examples=["你好"]),
-                mode: Literal["local_kb", "temp_kb", "search_engine"] = Body("local_kb", description="知识来源"),
+                mode: Literal["local_kb", "temp_kb", "search_engine"] = Body("local_kb", description="知识来源"), # Literal表示变量 mode 的取值只能是以下三个字符串字面量之一
                 kb_name: str = Body("", description="mode=local_kb时为知识库名称；temp_kb时为临时知识库ID，search_engine时为搜索引擎名称", examples=["samples"]),
                 top_k: int = Body(Settings.kb_settings.VECTOR_SEARCH_TOP_K, description="匹配向量数"),
                 score_threshold: float = Body(
                     Settings.kb_settings.SCORE_THRESHOLD,
                     description="知识库匹配相关度阈值，取值范围在0-1之间，SCORE越小，相关度越高，取到1相当于不筛选，建议设置在0.5左右",
                     ge=0,
-                    le=2,
+                    le=1,
                 ),
-                history: List[History] = Body(
+                history: List[History] = Body( # 类型含义：history 必须是一个列表，列表里每一项都是 History 类的对象。
                     [],
                     description="历史对话",
                     examples=[[
@@ -49,7 +49,7 @@ async def kb_chat(query: str = Body(..., description="用户输入", examples=["
                 ),
                 stream: bool = Body(True, description="流式输出"),
                 model: str = Body(get_default_llm(), description="LLM 模型名称。"),
-                temperature: float = Body(Settings.model_settings.TEMPERATURE, description="LLM 采样温度", ge=0.0, le=2.0),
+                temperature: float = Body(Settings.model_settings.TEMPERATURE, description="LLM 采样温度", ge=0.0, le=1.0), # 值越高，创意性越强但可能不稳定；值越低，回答越保守一致。
                 max_tokens: Optional[int] = Body(
                     Settings.model_settings.MAX_TOKENS,
                     description="限制LLM生成Token数量，默认None代表模型最大值"

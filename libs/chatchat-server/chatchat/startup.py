@@ -4,6 +4,7 @@ import logging.config
 import multiprocessing as mp
 import os
 import sys
+import traceback
 from contextlib import asynccontextmanager
 from multiprocessing import Process
 
@@ -31,7 +32,7 @@ def _set_app_event(app: FastAPI, started_event: mp.Event = None):
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         if started_event is not None:
-            started_event.set()
+            started_event.set() # started_event.set() 的作用是：将事件状态设为“已触发”（set）,其他等待这个事件的进程会从 started_event.wait() 中醒来
         yield
 
     app.router.lifespan_context = lifespan
@@ -54,7 +55,7 @@ def run_api_server(
     logger.info(f"Api MODEL_PLATFORMS: {Settings.model_settings.MODEL_PLATFORMS}")
     set_httpx_config()
     app = create_app(run_mode=run_mode)
-    _set_app_event(app, started_event)
+    _set_app_event(app, started_event) #在 FastAPI 应用启动完成后，自动触发一个“事件”（Event），通知其他进程：“我已经准备好了！”
 
     host = Settings.basic_settings.API_SERVER["host"]
     port = Settings.basic_settings.API_SERVER["port"]
@@ -66,7 +67,7 @@ def run_api_server(
         1024 * 1024 * 1024 * 3,
     )
     logging.config.dictConfig(logging_conf)  # type: ignore
-    uvicorn.run(app, host=host, port=port)
+    uvicorn.run(app, host=host, port=port) # “启动服务器，让 FastAPI 应用对外提供服务”,如果没有这一行，相当于已经有一个功能齐全的手机了，但是没有开机
 
 
 def run_webui(
@@ -82,9 +83,9 @@ def run_webui(
     host = Settings.basic_settings.WEBUI_SERVER["host"]
     port = Settings.basic_settings.WEBUI_SERVER["port"]
 
-    script_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "webui.py")
+    script_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "webui.py") # 找到当前目录下的 webui.py 文件路径，相当于告诉 Streamlit：“你要运行这个 Python 脚本作为网页”
 
-    flag_options = {
+    flag_options = { # 用来定制 Streamlit 的各种行为，比如定制主题颜色，页面样式等等。
         "server_address": host,
         "server_port": port,
         "theme_base": "light",
@@ -154,7 +155,7 @@ def run_webui(
             "lite",
         ]
 
-    try:
+    try: # 兼容不同版本的 Streamlit
         # for streamlit >= 1.12.1
         from streamlit.web import bootstrap
     except ImportError:
@@ -167,9 +168,9 @@ def run_webui(
         1024 * 1024 * 1024 * 3,
     )
     logging.config.dictConfig(logging_conf)  # type: ignore
-    bootstrap.load_config_options(flag_options=flag_options)
-    bootstrap.run(script_dir, False, args, flag_options)
-    started_event.set()
+    bootstrap.load_config_options(flag_options=flag_options) # 把 flag_options 加载为全局配置,替代 .streamlit/config.toml
+    bootstrap.run(script_dir, False, args, flag_options)# 启动服务器，让 Streamlit 应用对外提供服务，这里最主要就是找到webui.py这个脚本执行。
+    started_event.set() # 这行代码相当于子进程对主进程说“老板！我这边服务器已经起来了，可以对外服务了！主进程听到后，就从 .wait() 中醒来，继续执行后面的代码。
 
 
 def dump_server_info(after_start=False, args=None):
@@ -240,7 +241,7 @@ async def start_main_server(args):
         return f
 
     # This will be inherited by the child process if it is forked (not spawned)
-    signal.signal(signal.SIGINT, handler("SIGINT"))
+    signal.signal(signal.SIGINT, handler("SIGINT")) # ctrl+c优雅关闭程序
     signal.signal(signal.SIGTERM, handler("SIGTERM"))
 
     mp.set_start_method("spawn") # 设置进程启动方法为 “spawn”，这通常用于确保子进程有干净的内存空间。
@@ -251,7 +252,7 @@ async def start_main_server(args):
         args.api = True
         args.webui = True
 
-    dump_server_info(args=args) # 根据 args 参数创建并启动API服务器和/或Web UI服务器的进程。
+    dump_server_info(args=args) # 打印启动日志信息
 
     if len(sys.argv) > 1:
         logger.info(f"正在启动服务：")
@@ -262,13 +263,13 @@ async def start_main_server(args):
     def process_count():
         return len(processes)
 
-    api_started = manager.Event()
+    api_started = manager.Event() #这行代码在主进程中创建了一个共享事件 api_started，然后将它作为参数传给了子进程。
     if args.api:
         process = Process(
             target=run_api_server,
             name=f"API Server",
             kwargs=dict(
-                started_event=api_started,
+                started_event=api_started, #将共享事件 api_started作为参数传给了子进程。 这意味着子进程（运行 run_api_server 函数的那个新进程）也能访问这个 Event 对象。
                 run_mode=run_mode,
             ),
             daemon=False,
@@ -290,12 +291,12 @@ async def start_main_server(args):
 
     try:
         if p := processes.get("api"):
-            p.start()
+            p.start() # 启动api.py进程，它会开启一个全新的python进程，在这个进程中执行run_api_server函数，主进程继续往下走（但最后会等子进程执行完再接着走后续的逻辑）
             p.name = f"{p.name} ({p.pid})"
             api_started.wait()  # 等待api.py启动完成
 
         if p := processes.get("webui"):
-            p.start()
+            p.start() # 与上面同理，创建一个新的进程来执行
             p.name = f"{p.name} ({p.pid})"
             webui_started.wait()  # 等待webui.py启动完成
 
@@ -332,6 +333,7 @@ async def start_main_server(args):
     "--all",
     "all",
     is_flag=True,
+    default=True,
     help="run api.py and webui.py",
 )
 @click.option(
@@ -348,7 +350,6 @@ async def start_main_server(args):
     help="run webui.py server",
 )
 def main(all, api, webui):
-    all=True # todo 原本没这行代码
     class args: # 定义了一个名为 args 的内部类，该类用于存储脚本运行时的参数
         ...
     args.all = all # 将传入的参数值赋给 args 类的实例变量。

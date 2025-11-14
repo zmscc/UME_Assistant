@@ -6,10 +6,10 @@ import types
 chatchat = importlib.import_module("chatchat")
 
 # 创建新的模块对象
-module = types.ModuleType("langchain_chatchat")
-sys.modules["langchain_chatchat"] = module
+module = types.ModuleType("ume_chat")
+sys.modules["ume_chat"] = module
 
-# 把 a_chatchat 的所有属性复制到 langchain_chatchat
+# 把 a_chatchat 的所有属性复制到 ume_chat
 for attr in dir(chatchat):
     if not attr.startswith("_"):
         setattr(module, attr, getattr(chatchat, attr))
@@ -19,7 +19,7 @@ for attr in dir(chatchat):
 def import_submodule(name):
     full_name = f"chatchat.{name}"
     submodule = importlib.import_module(full_name)
-    sys.modules[f"langchain_chatchat.{name}"] = submodule
+    sys.modules[f"ume_chat.{name}"] = submodule
     for attr in dir(submodule):
         if not attr.startswith("_"):
             setattr(module, attr, getattr(submodule, attr))

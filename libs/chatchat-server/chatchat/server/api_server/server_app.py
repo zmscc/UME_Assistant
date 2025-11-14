@@ -23,9 +23,9 @@ from chatchat.server.chat.completion import completion
 from chatchat.server.utils import MakeFastAPIOffline
 
 
-def create_app(run_mode: str = None):
+def create_app(run_mode: str = None): # 参数 run_mode 可以用来控制不同运行模式（如开发、测试、生产）
     app = FastAPI(title="航旅助手 API Server", version=__version__)
-    MakeFastAPIOffline(app)
+    MakeFastAPIOffline(app) # 添加配置让 FastAPI 的 Swagger UI 文档（/docs）在无网络环境下也能正常加载。
     # Add CORS middleware to allow all origins
     # 在config.py中设置OPEN_DOMAIN=True，允许跨域
     # set OPEN_DOMAIN=True in config.py to allow cross-domain
@@ -46,9 +46,9 @@ def create_app(run_mode: str = None):
         return RedirectResponse(url="/docs") # 返回一个 HTTP 重定向响应，告诉客户端浏览器去请求 /docs 路径，这是默认的 Swagger UI 页面地址。
 
     # 将多个不同的路由器（chat_router, kb_router, tool_router, openai_router, server_router）包含到主应用中。每个路由器代表一组相关的 API 端点
-    app.include_router(chat_router) # 这行代码的作用是将 chat_router 中定义的所有路由添加到 app 中，使得这些路由可以开始接收和处理 HTTP 请求。
-    app.include_router(kb_router)
-    app.include_router(tool_router)
+    app.include_router(chat_router) # 对话后端逻辑（这行代码的作用是将 chat_router 中定义的所有路由添加到 app 中，使得这些路由可以开始接收和处理 HTTP 请求。）
+    app.include_router(kb_router) # 知识库管理后端逻辑
+    app.include_router(tool_router) # 工具后端逻辑
     app.include_router(openai_router)
     app.include_router(server_router)
 

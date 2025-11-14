@@ -44,7 +44,7 @@ chat_router.post(
 )(chat_feedback) # 将 chat_feedback 函数注册为处理 /feedback 路径的 HTTP POST 请求的处理器。chat_feedback的具体实现决定了如何处理接收到的反馈数据，并返回相应的响应。
 
 
-chat_router.post("/kb_chat", summary="知识库对话")(kb_chat) # 相当于在路由器下面加了一个主机
+chat_router.post("/kb_chat", summary="知识库对话")(kb_chat)
 chat_router.post("/file_chat", summary="文件对话")(file_chat)
 
 

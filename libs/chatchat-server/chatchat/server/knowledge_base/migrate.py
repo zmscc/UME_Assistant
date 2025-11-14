@@ -37,7 +37,7 @@ logger = build_logger()
 '''创建数据库表'''
 from chatchat.server.db.base import Base, engine
 def create_tables():
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine) # 根据所有继承自 Base 的模型类，自动在数据库中创建对应的表（如果还不存在）。
 
 '''重置数据库表'''
 def reset_tables():

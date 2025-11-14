@@ -6,6 +6,8 @@ from chatchat.server.db.base import Base
 class MessageModel(Base):
     """
     聊天记录模型
+    MessageModel：数据库表对应的实体类
+    相当于Java中的DTO
     """
 
     __tablename__ = "message"

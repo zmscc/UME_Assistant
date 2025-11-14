@@ -58,12 +58,12 @@ def get_message_by_id(session, message_id) -> MessageModel:
     return m
 
 
-@with_session
+@with_session # 这个注解相当于Java中@Transactional
 def feedback_message_to_db(session, message_id, feedback_score, feedback_reason):
     """
     反馈聊天记录
     """
-    m = session.query(MessageModel).filter_by(id=message_id).first() # 变量 m 是从数据库查询得到的 MessageModel 类的一个实例。具体来说，m 是通过 SQLAlchemy 的 ORM 查询方法 session.query(MessageModel).filter_by(id=message_id).first() 获取的，它代表了与给定 message_id 匹配的第一条聊天记录。
+    m = session.query(MessageModel).filter_by(id=message_id).first() # 变量 m 是从数据库查询得到的 MessageModel 类的一个实例。具体来说，m 是通过 SQLAlchemy 的 ORM 查询方法 session.query(MessageModel).filter_by(id=message_id).first() 获取的，它代表了与给定 message_id 匹配的第一条聊天记录。（对比myBatisPlus理解，他们实现一样的功能）
     if m:# 如果找到了匹配的消息（即 m 不为 None），则更新其 feedback_score 和 feedback_reason 属性，并将这些更改提交到数据库。
         m.feedback_score = feedback_score
         m.feedback_reason = feedback_reason

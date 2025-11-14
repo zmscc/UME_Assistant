@@ -348,7 +348,7 @@ class KBServiceFactory:
     @staticmethod
     def get_service(
         kb_name: str,
-        vector_store_type: Union[str, SupportedVSType],
+        vector_store_type: Union[str, SupportedVSType], # 表示这个变量可以是 str 类型，也可以是 SupportedVSType 类型。
         embed_model: str = get_default_embedding(),
         kb_info: str = None,
     ) -> KBService:

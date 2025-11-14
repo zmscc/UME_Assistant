@@ -76,7 +76,7 @@ class MinioStorage:
 if __name__ == "__main__":
     # 初始化 MinioStorage 类实例
     storage = MinioStorage(
-        "192.168.150.101:9000",
+        "192.168.200.130:9000",
         "kUeZWUIPvWvdz649",
         "Yfv1In0t75jYrkcOKj26GkYhcktxulHp",
         secure=False

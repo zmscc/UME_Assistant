@@ -265,29 +265,29 @@ def dialogue_page(
             files_upload = None
 
             # 用于图片对话、文生图的图片
-            # upload_image = None
-            # def on_upload_file_change():
-            #     if f := st.session_state.get("upload_image"):
-            #         name = ".".join(f.name.split(".")[:-1]) + ".png"
-            #         st.session_state["cur_image"] = (name, PILImage.open(f))
-            #     else:
-            #         st.session_state["cur_image"] = (None, None)
-            #     st.session_state.pop("paste_image", None)
-            #
-            # st.file_uploader("上传图片", ["bmp", "jpg", "jpeg", "png"],
-            #                                 accept_multiple_files=False,
-            #                                 key="upload_image",
-            #                                 on_change=on_upload_file_change)
-            # paste_image = paste_image_button("黏贴图像", key="paste_image")
-            # cur_image = st.session_state.get("cur_image", (None, None))
-            # if cur_image[1] is None and paste_image.image_data is not None:
-            #     name = hashlib.md5(paste_image.image_data.tobytes()).hexdigest()+".png"
-            #     cur_image = (name, paste_image.image_data)
-            # if cur_image[1] is not None:
-            #     st.image(cur_image[1])
-            #     buffer = io.BytesIO()
-            #     cur_image[1].save(buffer, format="png")
-            #     upload_image = upload_image_file(cur_image[0], buffer.getvalue())
+            upload_image = None
+            def on_upload_file_change():
+                if f := st.session_state.get("upload_image"):
+                    name = ".".join(f.name.split(".")[:-1]) + ".png"
+                    st.session_state["cur_image"] = (name, PILImage.open(f))
+                else:
+                    st.session_state["cur_image"] = (None, None)
+                st.session_state.pop("paste_image", None)
+
+            st.file_uploader("上传图片", ["bmp", "jpg", "jpeg", "png"],
+                                            accept_multiple_files=False,
+                                            key="upload_image",
+                                            on_change=on_upload_file_change)
+            paste_image = paste_image_button("黏贴图像", key="paste_image")
+            cur_image = st.session_state.get("cur_image", (None, None))
+            if cur_image[1] is None and paste_image.image_data is not None:
+                name = hashlib.md5(paste_image.image_data.tobytes()).hexdigest()+".png"
+                cur_image = (name, paste_image.image_data)
+            if cur_image[1] is not None:
+                st.image(cur_image[1])
+                buffer = io.BytesIO()
+                cur_image[1].save(buffer, format="png")
+                upload_image = upload_image_file(cur_image[0], buffer.getvalue())
 
         with tab2:
             # 会话

@@ -2,7 +2,7 @@
 from pymilvus import connections, Collection, utility
 
 
-def get_milvus_client(host="192.168.150.101", port="19530", collection_name="MyTest04"):
+def get_milvus_client(host="192.168.200.130", port="19530", collection_name="MyTest04"):
     # 建立到 Milvus 的连接
     connections.connect(
         alias="default",  # 连接别名，默认是 "default"
