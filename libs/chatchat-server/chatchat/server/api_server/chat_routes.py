@@ -49,7 +49,6 @@ chat_router.post("/file_chat", summary="文件对话")(file_chat)
 
 
 
-'''Agent入口(上面定义路由的统一聊天接口，支持多种类型的对话处理)'''
 '''此装饰函数等价于chat_router.post("/chat/completions", summary="兼容 openai 的统一 chat 接口")(chat_completions)'''
 @chat_router.post("/chat/completions", summary="兼容 openai 的统一 chat 接口") # @chat_router.post(...)：这是一个装饰器，用来将 chat_completions 函数注册为处理 /chat/completions 路径的 HTTP POST 请求的处理器。
 async def chat_completions(
@@ -100,7 +99,7 @@ async def chat_completions(
     conversation_id = extra.get("conversation_id")
 
     # chat based on result from one choiced tool
-    if body.tool_choice: # 单工具聊天（RAG）
+    if body.tool_choice: # 单工具聊天
         tool = get_tool(body.tool_choice["function"]["name"]) # 根据工具名称获取工具处理函数
         if not body.tools: # 如果 body.tools 是空的，下面将建一个新列表，并将其赋值给 body.tools，新列表中包含一个字典，该字典描述了一个工具的详细信息。
             body.tools = [

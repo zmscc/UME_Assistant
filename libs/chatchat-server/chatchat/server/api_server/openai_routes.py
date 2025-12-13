@@ -23,7 +23,9 @@ from .api_schemas import *
 
 logger = build_logger()
 
-
+'''
+它把本地部署的各种大模型（如 Qwen、ChatGLM、Baichuan 等）包装成标准的 OpenAI API 格式（如 /v1/chat/completions），让前端或其他系统可以像调用 OpenAI 一样调用你自己的模型服务。
+'''
 DEFAULT_API_CONCURRENCIES = 5  # 默认单个模型最大并发数
 model_semaphores: Dict[
     Tuple[str, str], asyncio.Semaphore

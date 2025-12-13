@@ -1,0 +1,242 @@
+{
+    "other_scenario": {
+    "name": "其它查询",
+    "description": "未命中特定服务场景时的兜底分类，用于触发RAG检索以回答用户问题",
+    "parameters": []
+  },
+  "greeting": {
+    "name": "问候处理",
+    "description": "处理用户的问候语，如中文‘你好’、英文‘hello’等常见打招呼用语",
+    "parameters": []
+  },
+  "baggage_inquiry": {
+    "name": "行李额度查询",
+    "description": "查询中国南方航空国内/国际航班的免费托运行李、手提行李规定及超重收费标准。",
+    "example": "输入：我从广州飞洛杉矶，经济舱，能带多少行李？\n答：{'name': 'flight_type', 'value': '国际'}, {'name': 'cabin_class', 'value': '经济舱'}, {'name': 'origin', 'value': '广州'}, {'name': 'destination', 'value': '洛杉矶'}",
+    "parameters": [
+      {
+        "name": "flight_type",
+        "desc": "航班类型，影响行李额，可选：国内、国际",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "cabin_class",
+        "desc": "舱位等级，可选：经济舱、公务舱、头等舱",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "origin",
+        "desc": "出发城市",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "destination",
+        "desc": "目的地城市",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "route_region",
+        "desc": "国际航班区域，可选：美洲、欧洲、亚洲、大洋洲、非洲",
+        "type": "string",
+        "required": false
+      },
+      {
+        "name": "special_item",
+        "desc": "是否携带特殊物品，如：运动器材、乐器、宠物、婴儿车",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "checkin_rules": {
+    "name": "值机规则咨询",
+    "description": "解答南航网上值机时间、截止时间、选座规则及特殊旅客办理方式。",
+    "example": "输入：我带宝宝坐飞机，怎么在线值机？\n答：{'name': 'passenger_type', 'value': '带婴儿'}, {'name': 'checkin_method', 'value': '网上值机'}, {'name': 'flight_type', 'value': '国内'}",
+    "parameters": [
+      {
+        "name": "checkin_method",
+        "desc": "值机方式，可选：网上值机、自助值机、柜台值机",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "flight_type",
+        "desc": "航班类型，可选：国内、国际",
+        "type": "string",
+        "required": true
+      }
+    ]
+  },
+  "ticket_refund_change_policy": {
+    "name": "退改签政策咨询",
+    "description": "说明南航不同舱位、票种的退票费、改签费及特殊情况下（如疫情）的处理政策。",
+    "example": "输入：经济舱5折票改签收多少钱？\n答：{'name': 'ticket_discount', 'value': '5折'}, {'name': 'cabin_class', 'value': '经济舱'}, {'name': 'action', 'value': '改签'}, {'name': 'flight_type', 'value': '国内'}",
+    "parameters": [
+      {
+        "name": "cabin_class",
+        "desc": "舱位等级",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "ticket_discount",
+        "desc": "机票折扣，如：全价、9折、8折、7折、6折、5折及以下",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "action",
+        "desc": "操作类型，可选：退票、改签",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "flight_type",
+        "desc": "航班类型，国内/国际政策不同",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "refund_reason",
+        "desc": "退票原因，如：自愿、非自愿（天气、疫情）",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "special_passenger_service": {
+    "name": "特殊旅客服务咨询",
+    "description": "解答孕妇、婴儿、老人、残障人士乘机所需的证明、申请方式及注意事项。",
+    "example": "输入：怀孕30周能坐飞机吗？\n答：{'name': 'passenger_type', 'value': '孕妇'}, {'name': 'gestational_week', 'value': '30'}",
+    "parameters": [
+      {
+        "name": "passenger_type",
+        "desc": "特殊旅客类型，可选：孕妇、婴儿、老人、残障人士",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "gestational_week",
+        "desc": "孕妇怀孕周数，用于判断是否需要医生证明",
+        "type": "number",
+        "required": false
+      },
+      {
+        "name": "infant_age",
+        "desc": "婴儿年龄（月），用于判断是否可乘机",
+        "type": "number",
+        "required": false
+      },
+      {
+        "name": "medical_proof",
+        "desc": "是否持有医生开具的适航证明",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "security_and_transit": {
+    "name": "安检与中转指引",
+    "description": "说明液体携带规定、中转换乘流程、护照签证要求及是否需要重新安检。",
+    "example": "输入：国际中转要重新过安检吗？\n答：{'name': 'transit_type', 'value': '国际中转'}, {'name': 'question_topic', 'value': '安检'}",
+    "parameters": [
+      {
+        "name": "transit_type",
+        "desc": "中转类型，可选：国内中转、国际中转",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "question_topic",
+        "desc": "咨询主题，可选：安检、行李直挂、护照、签证、过境签",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "luggage_through_check",
+        "desc": "是否办理了行李直挂，影响是否需要提取行李",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "flight_delay_service": {
+    "name": "航班延误服务说明",
+    "description": "说明南航航班延误后提供的餐食、住宿、改签等补偿服务标准。",
+    "example": "输入：航班延误5小时，有免费酒店吗？\n答：{'name': 'delay_duration', 'value': '5小时'}, {'name': 'service_requested', 'value': '住宿'}, {'name': 'flight_type', 'value': '国内'}",
+    "parameters": [
+      {
+        "name": "delay_duration",
+        "desc": "预计延误时长，如：2小时、4小时、过夜",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "service_requested",
+        "desc": "用户关心的服务，如：餐食、住宿、改签",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "flight_type",
+        "desc": "航班类型，国内/国际补偿标准不同",
+        "type": "string",
+        "required": true
+      }
+    ]
+  },
+  "inflight_service": {
+    "name": "机上服务介绍",
+    "description": "介绍南航机上餐饮、娱乐、WiFi、电源插座等服务内容。",
+    "example": "输入：头等舱有什么餐食？\n答：{'name': 'cabin_class', 'value': '头等舱'}, {'name': 'service_topic', 'value': '餐饮'}",
+    "parameters": [
+      {
+        "name": "cabin_class",
+        "desc": "舱位等级",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "service_topic",
+        "desc": "服务类型，可选：餐饮、娱乐、WiFi、电源插座",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "flight_route",
+        "desc": "航线类型，如：国内、国际长航线",
+        "type": "string",
+        "required": false
+      }
+    ]
+  },
+  "mileage_rule_inquiry": {
+    "name": "会员积分规则咨询",
+    "description": "解释南航明珠会员等级、积分累积规则、有效期及兑换政策。",
+    "example": "输入：金卡要多少里程升级？\n答：{'name': 'membership_level', 'value': '金卡'}, {'name': 'inquiry_type', 'value': '升级条件'}",
+    "parameters": [
+      {
+        "name": "membership_level",
+        "desc": "会员等级，可选：普卡、银卡、金卡、铂金卡",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "inquiry_type",
+        "desc": "咨询类型，可选：升级条件、积分获取、积分有效期、兑换比例",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "flight_type",
+        "desc": "影响积分累积的航班类型",
+        "type": "string",
+        "required": false
+      }
+    ]
+  }
+}

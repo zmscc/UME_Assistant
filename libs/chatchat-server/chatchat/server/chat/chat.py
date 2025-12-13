@@ -9,7 +9,6 @@ from langchain.chains import LLMChain
 from langchain.prompts.chat import ChatPromptTemplate
 from langchain_core.messages import AIMessage, HumanMessage, convert_to_messages
 from sse_starlette.sse import EventSourceResponse
-
 from chatchat.settings import Settings
 from chatchat.server.agent.agent_factory.agents_registry import agents_registry
 from chatchat.server.api_server.api_schemas import OpenAIChatOutput
@@ -129,8 +128,6 @@ async def chat(
     tool_config: dict = Body({}, description="工具配置", examples=[]),
     max_tokens: int = Body(None, description="LLM最大token数配置", example=4096),
 ):
-    """Agent 对话"""
-
     async def chat_iterator() -> AsyncIterable[OpenAIChatOutput]: #该返回一个异步可迭代对象（AsyncIterable），异步迭代器特别适用于处理需要逐步生成数据的场景。该对象生成 OpenAIChatOutput 类型的项。
         try:
             callback = AgentExecutorAsyncIteratorCallbackHandler()
