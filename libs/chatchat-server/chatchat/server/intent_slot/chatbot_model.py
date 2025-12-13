@@ -92,7 +92,7 @@ class CommonProcessor(SceneProcessor):
                     break
 
         if fully_filled:
-            return self._build_final_query()
+            return self._generate_natural_query_with_llm()
         else:
             return self._ask_missing()
 
@@ -105,50 +105,6 @@ class CommonProcessor(SceneProcessor):
             if value is not None:
                 parts.append(f"{desc}为 {value}")
         return "，".join(parts) + "，请问相关规定是什么？"
-    # def _build_final_query(self) -> str:
-    #     # 先构造结构化信息（用于 prompt）
-    #     context_parts = []
-    #     for p in self.scene_config["parameters"]:
-    #         name = p["name"]
-    #         desc = p["desc"].split("，")[0]
-    #         value = self.slot.get(name)
-    #         if value is not None:
-    #             context_parts.append(f"{desc}：{value}")
-    #
-    #     scene_name = self.scene_config.get("name", "当前服务")
-    #     context_str = "；".join(context_parts)
-    #
-    #     # 构造 prompt 让 LLM 生成自然问句
-    #     prompt = (
-    #         f"你是一个航空客服助手，请根据以下用户意图和参数，生成一句自然、完整、适合搜索知识库的问题。\n"
-    #         f"场景：{scene_name}\n"
-    #         f"参数：{context_str}\n"
-    #         f"要求：\n"
-    #         f"- 问题要口语化、流畅\n"
-    #         f"- 包含所有关键信息\n"
-    #         f"- 以问号结尾\n"
-    #         f"- 不要包含“根据以上信息”等冗余表述\n"
-    #         f"生成的问题："
-    #     )
-    #
-    #     from .utils import send_message  # 假设你的 LLM 调用函数在这里
-    #     try:
-    #         natural_query = send_message(prompt, "")  # user_input 为空，因为全在 prompt 里
-    #         # 简单清洗：去掉可能的前缀（如“问题：”）
-    #         natural_query = natural_query.strip().lstrip("问题：").strip()
-    #         if not natural_query.endswith(("?", "？")):
-    #             natural_query += "？"
-    #         return natural_query
-    #     except Exception as e:
-    #         # fallback：如果 LLM 调用失败，回退到原始拼接
-    #         parts = []
-    #         for p in self.scene_config["parameters"]:
-    #             name = p["name"]
-    #             desc = p["desc"].split("，")[0]
-    #             value = self.slot.get(name)
-    #             if value is not None:
-    #                 parts.append(f"{desc}为 {value}")
-    #         return "，".join(parts) + "，请问相关规定是什么？"
 
     def _ask_missing(self) -> str:
         missing = []
@@ -156,6 +112,38 @@ class CommonProcessor(SceneProcessor):
             if p.get("required", False) and self.slot.get(p["name"]) in (None, ""):
                 missing.append(p["desc"])
         return "，".join(missing) + "？" if missing else "请补充更多信息。"
+
+    def _generate_natural_query_with_llm(self) -> str:
+        """
+        使用 LLM 将槽位信息转换为自然语言问题。
+        """
+        slot_desc = []
+        for p in self.scene_config["parameters"]:
+            name = p["name"]
+            desc = p["desc"].split("，")[0]
+            value = self.slot.get(name)
+            if value is not None and str(value).strip():
+                slot_desc.append(f"{desc}是{value}")
+
+        if not slot_desc:
+            return "请问相关规定是什么？"
+
+        prompt = (
+                "你是一个航空客服助手，请将以下结构化信息转换成一个自然、流畅、完整的中文问题，"
+                "用于向知识库查询相关政策。不要添加解释或额外内容，只输出问题。\n\n"
+                "信息：" + "；".join(slot_desc) + "\n\n"
+                                              "问题："
+        )
+        llm_resp = send_message(prompt, None)
+        if llm_resp and llm_resp.strip():
+            # 清理可能的多余标点
+            question = llm_resp.strip().rstrip("。？?").strip()
+            if not question.endswith("？"):
+                question += "？"
+            return question
+        else:
+            # fallback 到拼接
+            return "，".join(slot_desc) + "，请问相关规定是什么？"
 
 
 class ChatbotModel:
@@ -202,53 +190,69 @@ class ChatbotModel:
         score = extract_float(result) if result else 0.0
         return score > RELATED_INTENT_THRESHOLD
 
-    def process_multi_question(self, user_input: str, conversation_id: str) -> str:
+    def process_multi_question(self, user_input: str, conversation_id: str) -> Tuple[str, bool]:
         from .session_manager import get_conversation_history
         history = get_conversation_history(conversation_id)
 
         if self.current_purpose and self.is_related_to_last_intent(user_input, history):
             processor = self.get_processor_for_scene(self.current_purpose)
-            return processor.process(user_input, None)
+            # 先更新槽位（processor.process 内部应完成槽位填充）
+            response = processor.process(user_input, None)
+
+            # ✅ 关键：动态判断是否已填满
+            fully_filled = True
+            for p in processor.scene_config.get("parameters", []):
+                if p.get("required", False):
+                    val = processor.slot.get(p["name"])
+                    if val is None or str(val).strip() == "":
+                        fully_filled = False
+                        break
+
+            return (response, fully_filled)  # ← 根据实际状态返回！
+
         else:
             # 检测到不相关输入，重置当前意图和槽位状态（不清 session）
             if self.current_purpose:
-                # 放弃当前意图，清空状态，为新意图做准备
                 self.current_purpose = ""
                 self.processors.clear()
 
             scene, params = self.recognize_intent_and_extract_slots(user_input)
+
             # ===== 特殊场景短路处理 =====
             if scene == "greeting":
-                # 问候语：标记为最终响应
-                self.current_purpose = "greeting"  # 👈 关键：设置当前意图
-                return "【FINAL】您好！我是南航智能客服，请问有什么可以帮您？"
+                self.current_purpose = "greeting"
+                final_msg = "【FINAL】您好！我是南航智能客服，请问有什么可以帮您？"
+                return (final_msg, False)
+
             elif scene == "other_scenario":
-                # 兜底场景：返回空字符串，让上层走 RAG
-                self.current_purpose = ""  # 显式清空意图
-                return user_input
-            # ===== 结束新增 =====
+                self.current_purpose = ""
+                return (user_input, True)
+
+            # ===== 槽位场景处理 =====
             if scene:
                 self.current_purpose = scene
                 processor = self.get_processor_for_scene(scene)
-                # 注入已提取的参数
                 for k, v in params.items():
                     if k in processor.slot and v not in (None, "", "null", "None"):
                         processor.slot[k] = str(v).strip()
-                # 检查是否完成
+
                 fully_filled = True
-                for p in processor.scene_config["parameters"]:
+                for p in processor.scene_config.get("parameters", []):
                     if p.get("required", False):
                         val = processor.slot.get(p["name"])
                         if val is None or str(val).strip() == "":
                             fully_filled = False
                             break
+
                 if fully_filled:
-                    return processor._build_final_query()
+                    query = processor._generate_natural_query_with_llm()
+                    return (query, True)
                 else:
-                    return processor._ask_missing()
+                    question = processor._ask_missing()
+                    return (question, False)
             else:
                 self.current_purpose = ""
-                return ""
+                return ("", False)
 
     def get_processor_for_scene(self, scene_name: str) -> CommonProcessor:
         if scene_name not in self.processors:
