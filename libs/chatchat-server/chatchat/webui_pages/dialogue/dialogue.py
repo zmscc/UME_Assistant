@@ -16,9 +16,7 @@ from streamlit_chatbox import *
 from streamlit_extras.bottom_container import bottom
 from streamlit_paste_button import paste_image_button
 
-from chatchat.settings import Settings
 from chatchat.server.callback_handler.agent_callback_handler import AgentStatus
-from chatchat.server.knowledge_base.model.kb_document_model import DocumentWithVSId
 from chatchat.server.knowledge_base.utils import format_reference
 from chatchat.server.utils import MsgType, get_config_models, get_config_platforms, get_default_llm
 from chatchat.webui_pages.utils import *
