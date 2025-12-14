@@ -16,10 +16,11 @@ from chatchat.webui_pages.dialogue.dialogue import (save_session, restore_sessio
                                                     add_conv, del_conv, clear_conv)
 from chatchat.webui_pages.utils import *
 
+chat_box = ChatBox(assistant_avatar=get_img_base64("chatchat_icon_blue_square_v2.png"))
 
-chat_box = ChatBox(assistant_avatar=get_img_base64("chatchat_icon_blue_square_v2.png")) # 创建聊天框界面，在调用ChatBox类的构造函数时传递的一个参数。这个参数设置了聊天框助手的头像
+'''初始化会话状态'''
 
-'''初始化会话状态，初始化或设置 Streamlit 会话状态中的多个变量，这些变量用于控制对话历史长度、当前和最后的会话名称、文件聊天 ID 等。'''
+
 def init_widgets():
     st.session_state.setdefault("history_len", Settings.model_settings.HISTORY_LEN)
     st.session_state.setdefault("selected_kb", Settings.kb_settings.DEFAULT_KNOWLEDGE_BASE)
@@ -41,15 +42,11 @@ def kb_chat(api: ApiRequest):
     ctx.setdefault("temperature", Settings.model_settings.TEMPERATURE)
     init_widgets()
 
-    '''检查当前会话名称是否发生变化，如果变化则保存旧会话并恢复新会话的状态'''
-    # sac on_change callbacks not working since st>=1.34
+    '''检查当前会话名称是否发生变化'''
     if st.session_state.cur_conv_name != st.session_state.last_conv_name:
         save_session(st.session_state.last_conv_name)
         restore_session(st.session_state.cur_conv_name)
         st.session_state.last_conv_name = st.session_state.cur_conv_name
-
-    # st.write(chat_box.cur_chat_name)
-    # st.write(st.session_state)
 
     @st.experimental_dialog("模型配置", width="large")
     def llm_model_setting():
@@ -84,84 +81,44 @@ def kb_chat(api: ApiRequest):
 
     # 配置参数
     with st.sidebar:
-        tabs = st.tabs(["RAG 配置", "会话设置"])
-        with tabs[0]:
-            dialogue_modes = ["知识库问答",
-                              "文件对话",
-                              "搜索引擎问答",
-                              ]
-            dialogue_mode = st.selectbox("请选择对话模式：",
-                                         dialogue_modes,
-                                         key="dialogue_mode",
-                                         )
-            placeholder = st.empty()
-            st.divider()
-            # prompt_templates_kb_list = list(Settings.prompt_settings.rag)
-            # prompt_name = st.selectbox(
-            #     "请选择Prompt模板：",
-            #     prompt_templates_kb_list,
-            #     key="prompt_name",
-            # )
-            prompt_name="default"
-            history_len = st.number_input("历史对话轮数：", 0, 20, key="history_len")
-            kb_top_k = st.number_input("匹配知识条数：", 1, 20, key="kb_top_k")
-            ## Bge 模型会超过1
-            score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, step=0.01, key="score_threshold")
-            return_direct = st.checkbox("仅返回检索结果", key="return_direct")
+        st.subheader("RAG 配置")
+        dialogue_mode = "知识库问答"  # 模式硬编码
+        placeholder = st.empty()
+        st.divider()
 
+        prompt_name = "default"
+        history_len = st.number_input("历史对话轮数：", 0, 20, key="history_len")
+        kb_top_k = st.number_input("匹配知识条数：", 1, 20, key="kb_top_k")
+        ## Bge 模型会超过1
+        score_threshold = st.slider("知识匹配分数阈值：", 0.0, 2.0, step=0.01, key="score_threshold")
+        return_direct = st.checkbox("仅返回检索结果", key="return_direct")
 
+        selected_kb = None
 
-            def on_kb_change():
-                st.toast(f"已加载知识库： {st.session_state.selected_kb}")
+        def on_kb_change():
+            st.toast(f"已加载知识库： {st.session_state.selected_kb}")
 
-            with placeholder.container():
-                if dialogue_mode == "知识库问答":
-                    kb_list = [x["kb_name"] for x in api.list_knowledge_bases()]
-                    selected_kb = st.selectbox(
-                        "请选择知识库：",
-                        kb_list,
-                        on_change=on_kb_change,
-                        key="selected_kb",
-                    )
-                elif dialogue_mode == "文件对话":
-                    files = st.file_uploader("上传知识文件：",
-                                            [i for ls in LOADER_DICT.values() for i in ls],
-                                            accept_multiple_files=True,
-                                            )
-                    if st.button("开始上传", disabled=len(files) == 0):
-                        st.session_state["file_chat_id"] = upload_temp_docs(files, api)
-                elif dialogue_mode == "搜索引擎问答":
-                    search_engine_list = list(Settings.tool_settings.search_internet["search_engine_config"])
-                    search_engine = st.selectbox(
-                        label="请选择搜索引擎",
-                        options=search_engine_list,
-                        key="search_engine",
-                    )
+        with placeholder.container():
+            kb_list = [x["kb_name"] for x in api.list_knowledge_bases()]
 
-        with tabs[1]:
-            # 会话
-            cols = st.columns(3)
-            conv_names = chat_box.get_chat_names()
+            # ⭐ 关键修复：检查知识库列表是否为空，避免 ValueError
+            if not kb_list:
+                st.warning("知识库列表为空，请先前往知识库管理页面创建或加载知识库！")
+                selected_kb = None
+            else:
+                try:
+                    # 尝试获取默认索引
+                    default_index = kb_list.index(st.session_state.selected_kb)
+                except:
+                    default_index = 0
 
-            def on_conv_change():
-                print(conversation_name, st.session_state.cur_conv_name)
-                save_session(conversation_name)
-                restore_session(st.session_state.cur_conv_name)
-
-            conversation_name = sac.buttons(
-                conv_names,
-                label="当前会话：",
-                key="cur_conv_name",
-                on_change=on_conv_change,
-            )
-            chat_box.use_chat_name(conversation_name)
-            conversation_id = chat_box.context["uid"]
-            if cols[0].button("新建", on_click=add_conv):
-                ...
-            if cols[1].button("重命名"):
-                rename_conversation()
-            if cols[2].button("删除", on_click=del_conv):
-                ...
+                selected_kb = st.selectbox(
+                    "请选择知识库：",
+                    kb_list,
+                    index=default_index,  # 使用安全的默认索引
+                    on_change=on_kb_change,
+                    key="selected_kb",
+                )
 
     # Display chat messages from history on app rerun
     chat_box.output_messages()
@@ -171,7 +128,7 @@ def kb_chat(api: ApiRequest):
 
     # chat input
     with bottom():
-        cols = st.columns([1, 0.2, 15,  1])
+        cols = st.columns([1, 0.2, 15, 1])
         if cols[0].button(":gear:", help="模型配置"):
             widget_keys = ["platform", "llm_model", "temperature", "system_message"]
             chat_box.context_to_session(include=widget_keys)
@@ -179,9 +136,13 @@ def kb_chat(api: ApiRequest):
         if cols[-1].button(":wastebasket:", help="清空对话"):
             chat_box.reset_history()
             rerun()
-        # with cols[1]:
-        #     mic_audio = audio_recorder("", icon_size="2x", key="mic_audio")
+
         prompt = cols[2].chat_input(chat_input_placeholder, key="prompt")
+
+    # 如果没有知识库被选中，则不进行RAG流程
+    if not selected_kb:
+        return
+
     if prompt:
         history = get_messages_history(ctx.get("history_len", 0))
         messages = history + [{"role": "user", "content": prompt}]
@@ -194,37 +155,25 @@ def kb_chat(api: ApiRequest):
             prompt_name=prompt_name,
             return_direct=return_direct,
         )
-    
+
         api_url = api_address(is_public=True)
-        if dialogue_mode == "知识库问答":
-            client = openai.Client(base_url=f"{api_url}/knowledge_base/local_kb/{selected_kb}", api_key="NONE")
-            chat_box.ai_say([
-                Markdown("...", in_expander=True, title="知识库匹配结果", state="running", expanded=return_direct),
-                f"正在查询知识库 `{selected_kb}` ...",
-            ])
-        elif dialogue_mode == "文件对话":
-            if st.session_state.get("file_chat_id") is None:
-                st.error("请先上传文件再进行对话")
-                st.stop()
-            knowledge_id=st.session_state.get("file_chat_id")
-            client = openai.Client(base_url=f"{api_url}/knowledge_base/temp_kb/{knowledge_id}", api_key="NONE")
-            chat_box.ai_say([
-                Markdown("...", in_expander=True, title="知识库匹配结果", state="running", expanded=return_direct),
-                f"正在查询文件 `{st.session_state.get('file_chat_id')}` ...",
-            ])
-        else:
-            client = openai.Client(base_url=f"{api_url}/knowledge_base/search_engine/{search_engine}", api_key="NONE")
-            chat_box.ai_say([
-                Markdown("...", in_expander=True, title="知识库匹配结果", state="running", expanded=return_direct),
-                f"正在执行 `{search_engine}` 搜索...",
-            ])
+
+        # ⭐ 关键修复：简化为只进行知识库问答（RAG）逻辑
+        chat_box.use_chat_name(st.session_state.cur_conv_name)
+        client = openai.Client(base_url=f"{api_url}/knowledge_base/local_kb/{selected_kb}", api_key="NONE")
+
+        chat_box.ai_say([
+            Markdown("...", in_expander=True, title="知识库匹配结果", state="running", expanded=return_direct),
+            f"正在查询知识库 `{selected_kb}` ...",
+        ])
 
         text = ""
         first = True
 
         '''处理来自 AI 模型的流式响应，并实时更新聊天界面以显示模型生成的回答。'''
         try:
-            for d in client.chat.completions.create(messages=messages, model=llm_model, stream=True, extra_body=extra_body):
+            for d in client.chat.completions.create(messages=messages, model=llm_model, stream=True,
+                                                    extra_body=extra_body):
                 if first:
                     chat_box.update_msg("\n\n".join(d.docs), element_index=0, streaming=False, state="complete")
                     chat_box.update_msg("", streaming=False)
@@ -233,27 +182,8 @@ def kb_chat(api: ApiRequest):
                 text += d.choices[0].delta.content or ""
                 chat_box.update_msg(text.replace("\n", "\n\n"), streaming=True)
             chat_box.update_msg(text, streaming=False)
-            # TODO: 搜索未配置API KEY时产生报错
         except Exception as e:
-            st.error(e.body)
+            st.error(f"知识库查询失败：{e.body}")
 
-    now = datetime.now()
-    with tabs[1]:
-        cols = st.columns(2)
-        export_btn = cols[0]
-        if cols[1].button(
-            "清空对话",
-            use_container_width=True,
-        ):
-            chat_box.reset_history()
-            rerun()
-
-    export_btn.download_button(
-        "导出记录",
-        "".join(chat_box.export2md()),
-        file_name=f"{now:%Y-%m-%d %H.%M}_对话记录.md",
-        mime="text/markdown",
-        use_container_width=True,
-    )
-
-    # st.write(chat_box.history)
+    # --- 移除 清空对话 和 导出记录 按钮 (根据您之前修改 kb_chat.py 的意图) ---
+    # 如果您希望保留这些功能，请自行添加回来
