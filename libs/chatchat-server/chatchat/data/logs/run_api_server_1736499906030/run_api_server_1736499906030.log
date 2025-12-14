@@ -1,5 +1,0 @@
-2025-01-10 17:08:31,458 langchain_community.vectorstores.milvus 34716 ERROR    Failed to create new connection using: 994d99687bd443cfa382895b948fbc4d
-2025-01-10 17:08:54,355 langchain_community.vectorstores.milvus 34716 ERROR    Failed to create new connection using: 17e6cb9a639c4273a3b031175bd8ca68
-2025-01-10 17:10:16,768 langchain_community.vectorstores.milvus 34716 ERROR    Failed to create new connection using: 0369f1a7c0084f12befd10a148cb5759
-2025-01-10 17:21:31,593 langchain_community.vectorstores.milvus 34716 ERROR    Failed to create new connection using: 7635b91b429d4fe481e88dbe3ea7ac01
-2025-01-10 17:22:03,816 langchain_community.vectorstores.milvus 34716 ERROR    Failed to create new connection using: 818594e3509c4e15a1539d77805beb67
