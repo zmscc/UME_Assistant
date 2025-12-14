@@ -5,6 +5,26 @@ import streamlit as st
 from streamlit_chatbox import *
 from streamlit_extras.bottom_container import bottom
 
+# 确保 chatchat.settings.Settings 被导入
+try:
+    from chatchat.settings import Settings
+except ImportError:
+    # 临时兼容处理，防止Settings未被导入时报错
+    class DummySettings:
+        class model_settings:
+            HISTORY_LEN = 5
+            TEMPERATURE = 0.7
+
+        class kb_settings:
+            DEFAULT_KNOWLEDGE_BASE = "samples"
+            VECTOR_SEARCH_TOP_K = 3
+            SEARCH_ENGINE_TOP_K = 3
+            SCORE_THRESHOLD = 0.8
+            DEFAULT_SEARCH_ENGINE = "bing"
+
+
+    Settings = DummySettings
+
 from chatchat.server.utils import get_config_models, get_config_platforms, get_default_llm, api_address
 from chatchat.webui_pages.dialogue.dialogue import (save_session, restore_session, rerun,
                                                     get_messages_history, upload_temp_docs,
@@ -12,8 +32,8 @@ from chatchat.webui_pages.dialogue.dialogue import (save_session, restore_sessio
 from chatchat.webui_pages.utils import *
 
 chat_box = ChatBox(
-        assistant_avatar=get_img_base64("chatchat_icon_blue_square_v2.png"),
-        user_avatar = "🙂"
+    assistant_avatar=get_img_base64("chatchat_icon_blue_square_v2.png"),
+    user_avatar="🙂"
 )
 
 '''初始化会话状态'''
@@ -99,13 +119,11 @@ def kb_chat(api: ApiRequest):
         with placeholder.container():
             kb_list = [x["kb_name"] for x in api.list_knowledge_bases()]
 
-            # ⭐ 关键修复：检查知识库列表是否为空，避免 ValueError
             if not kb_list:
                 st.warning("知识库列表为空，请先前往知识库管理页面创建或加载知识库！")
                 selected_kb = None
             else:
                 try:
-                    # 尝试获取默认索引
                     default_index = kb_list.index(st.session_state.selected_kb)
                 except:
                     default_index = 0
@@ -113,7 +131,7 @@ def kb_chat(api: ApiRequest):
                 selected_kb = st.selectbox(
                     "请选择知识库：",
                     kb_list,
-                    index=default_index,  # 使用安全的默认索引
+                    index=default_index,
                     on_change=on_kb_change,
                     key="selected_kb",
                 )
@@ -131,6 +149,8 @@ def kb_chat(api: ApiRequest):
             widget_keys = ["platform", "llm_model", "temperature", "system_message"]
             chat_box.context_to_session(include=widget_keys)
             llm_model_setting()
+
+        # ⭐ 恢复清空按钮
         if cols[-1].button(":wastebasket:", help="清空对话"):
             chat_box.reset_history()
             rerun()
@@ -156,7 +176,6 @@ def kb_chat(api: ApiRequest):
 
         api_url = api_address(is_public=True)
 
-        # ⭐ 关键修复：简化为只进行知识库问答（RAG）逻辑
         chat_box.use_chat_name(st.session_state.cur_conv_name)
         client = openai.Client(base_url=f"{api_url}/knowledge_base/local_kb/{selected_kb}", api_key="NONE")
 
@@ -173,15 +192,30 @@ def kb_chat(api: ApiRequest):
             for d in client.chat.completions.create(messages=messages, model=llm_model, stream=True,
                                                     extra_body=extra_body):
                 if first:
-                    chat_box.update_msg("\n\n".join(d.docs), element_index=0, streaming=False, state="complete")
+                    docs = getattr(d, 'docs', []) if hasattr(d, 'docs') else []
+                    if docs:
+                        chat_box.update_msg("\n\n".join(docs), element_index=0, streaming=False, state="complete")
+                    else:
+                        chat_box.update_msg("未找到匹配的知识或文档。", element_index=0, streaming=False, state="complete")
+
                     chat_box.update_msg("", streaming=False)
                     first = False
                     continue
-                text += d.choices[0].delta.content or ""
-                chat_box.update_msg(text.replace("\n", "\n\n"), streaming=True)
-            chat_box.update_msg(text, streaming=False)
-        except Exception as e:
-            st.error(f"知识库查询失败：{e.body}")
 
-    # --- 移除 清空对话 和 导出记录 按钮 (根据您之前修改 kb_chat.py 的意图) ---
-    # 如果您希望保留这些功能，请自行添加回来
+                content = d.choices[0].delta.content
+                if content:
+                    text += content
+                    chat_box.update_msg(text.replace("\n", "\n\n"), streaming=True)
+
+            chat_box.update_msg(text, streaming=False)
+
+        except openai.APIError as e:
+            error_msg = getattr(e, 'body', str(e))
+            st.error(f"知识库查询 API 失败：{error_msg}")
+            chat_box.update_msg(f"查询失败，API 返回错误：{error_msg}", streaming=False)
+            chat_box.update_msg("查询失败，请检查配置和 API 服务。", element_index=0, streaming=False, state="complete")
+        except Exception as e:
+            error_msg = getattr(e, 'body', str(e)) if hasattr(e, 'body') else str(e)
+            st.error(f"知识库查询发生未知错误：{error_msg}")
+            chat_box.update_msg(f"查询失败，发生未知错误：{error_msg}", streaming=False)
+            chat_box.update_msg("查询失败，请检查配置和 API 服务。", element_index=0, streaming=False, state="complete")
