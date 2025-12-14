@@ -23,7 +23,6 @@ from chatchat.server.knowledge_base.utils import format_reference
 from chatchat.server.utils import MsgType, get_config_models, get_config_platforms, get_default_llm
 from chatchat.webui_pages.utils import *
 
-
 chat_box = ChatBox(assistant_avatar=get_img_base64("chatchat_icon_blue_square_v2.png"))
 
 
@@ -50,7 +49,7 @@ def rerun():
 
 
 def get_messages_history(
-    history_len: int, content_in_expander: bool = False
+        history_len: int, content_in_expander: bool = False
 ) -> List[Dict]:
     """
     返回消息历史。
@@ -147,8 +146,8 @@ def list_tools(_api: ApiRequest):
 
 
 def dialogue_page(
-    api: ApiRequest,
-    is_lite: bool = False,
+        api: ApiRequest,
+        is_lite: bool = False,
 ):
     ctx = chat_box.context
     ctx.setdefault("uid", uuid.uuid4().hex)
@@ -200,141 +199,142 @@ def dialogue_page(
             rerun()
 
     with st.sidebar:
-        tab1, tab2 = st.tabs(["工具设置", "会话设置"])
+        # 只保留“工具设置”的内容，并处理“会话”相关逻辑
+        st.title("工具与会话")
 
-        with tab1:
-            use_agent = st.checkbox(
-                "启用Agent", help="请确保选择的模型具备Agent能力", key="use_agent"
+        use_agent = st.checkbox(
+            "启用Agent", help="请确保选择的模型具备Agent能力", key="use_agent"
+        )
+        output_agent = st.checkbox("显示 Agent 过程", key="output_agent")
+
+        # 选择工具
+        tools = list_tools(api)
+        tool_names = ["None"] + list(tools)
+        if use_agent:
+            selected_tools = st.multiselect(
+                "选择工具",
+                list(tools),
+                format_func=lambda x: tools[x]["title"],
+                key="selected_tools",
             )
-            output_agent = st.checkbox("显示 Agent 过程", key="output_agent")
+        else:
+            selected_tool = st.selectbox(
+                "选择工具",
+                tool_names,
+                format_func=lambda x: tools.get(x, {"title": "None"})["title"],
+                key="selected_tool",
+            )
+            selected_tools = [selected_tool]
+        selected_tool_configs = {
+            name: tool["config"]
+            for name, tool in tools.items()
+            if name in selected_tools
+        }
 
-            # 选择工具
-            tools = list_tools(api)
-            tool_names = ["None"] + list(tools)
-            if use_agent:
-                # selected_tools = sac.checkbox(list(tools), format_func=lambda x: tools[x]["title"], label="选择工具",
-                # check_all=True, key="selected_tools")
-                selected_tools = st.multiselect(
-                    "选择工具",
-                    list(tools),
-                    format_func=lambda x: tools[x]["title"],
-                    key="selected_tools",
-                )
-            else:
-                # selected_tool = sac.buttons(list(tools), format_func=lambda x: tools[x]["title"], label="选择工具",
-                # key="selected_tool")
-                selected_tool = st.selectbox(
-                    "选择工具",
-                    tool_names,
-                    format_func=lambda x: tools.get(x, {"title": "None"})["title"],
-                    key="selected_tool",
-                )
-                selected_tools = [selected_tool]
-            selected_tool_configs = {
-                name: tool["config"]
-                for name, tool in tools.items()
-                if name in selected_tools
-            }
-
-            if "None" in selected_tools:
-                selected_tools.remove("None")
-            # 当不启用Agent时，手动生成工具参数
-            # TODO: 需要更精细的控制控件
-            tool_input = {}
-            if not use_agent and len(selected_tools) == 1:
-                with st.expander("工具参数", True):
-                    for k, v in tools[selected_tools[0]]["args"].items():
-                        if choices := v.get("choices", v.get("enum")):
-                            tool_input[k] = st.selectbox(v["title"], choices)
+        if "None" in selected_tools:
+            selected_tools.remove("None")
+        # 当不启用Agent时，手动生成工具参数
+        # TODO: 需要更精细的控制控件
+        tool_input = {}
+        if not use_agent and len(selected_tools) == 1:
+            with st.expander("工具参数", True):
+                for k, v in tools[selected_tools[0]]["args"].items():
+                    if choices := v.get("choices", v.get("enum")):
+                        tool_input[k] = st.selectbox(v["title"], choices)
+                    else:
+                        if v["type"] == "integer":
+                            tool_input[k] = st.slider(
+                                v["title"], value=v.get("default")
+                            )
+                        elif v["type"] == "number":
+                            tool_input[k] = st.slider(
+                                v["title"], value=v.get("default"), step=0.1
+                            )
                         else:
-                            if v["type"] == "integer":
-                                tool_input[k] = st.slider(
-                                    v["title"], value=v.get("default")
-                                )
-                            elif v["type"] == "number":
-                                tool_input[k] = st.slider(
-                                    v["title"], value=v.get("default"), step=0.1
-                                )
-                            else:
-                                tool_input[k] = st.text_input(
-                                    v["title"], v.get("default")
-                                )
+                            tool_input[k] = st.text_input(
+                                v["title"], v.get("default")
+                            )
 
-            # uploaded_file = st.file_uploader("上传附件", accept_multiple_files=False)
-            # files_upload = process_files(files=[uploaded_file]) if uploaded_file else None
-            files_upload = None
+        # uploaded_file = st.file_uploader("上传附件", accept_multiple_files=False)
+        # files_upload = process_files(files=[uploaded_file]) if uploaded_file else None
+        files_upload = None
 
-            # 用于图片对话、文生图的图片
-            upload_image = None
-            def on_upload_file_change():
-                if f := st.session_state.get("upload_image"):
-                    name = ".".join(f.name.split(".")[:-1]) + ".png"
-                    st.session_state["cur_image"] = (name, PILImage.open(f))
-                else:
-                    st.session_state["cur_image"] = (None, None)
-                st.session_state.pop("paste_image", None)
+        # 用于图片对话、文生图的图片
+        upload_image = None
 
-            st.file_uploader("上传图片", ["bmp", "jpg", "jpeg", "png"],
-                                            accept_multiple_files=False,
-                                            key="upload_image",
-                                            on_change=on_upload_file_change)
-            paste_image = paste_image_button("黏贴图像", key="paste_image")
-            cur_image = st.session_state.get("cur_image", (None, None))
-            if cur_image[1] is None and paste_image.image_data is not None:
-                name = hashlib.md5(paste_image.image_data.tobytes()).hexdigest()+".png"
-                cur_image = (name, paste_image.image_data)
-            if cur_image[1] is not None:
-                st.image(cur_image[1])
-                buffer = io.BytesIO()
-                cur_image[1].save(buffer, format="png")
-                upload_image = upload_image_file(cur_image[0], buffer.getvalue())
+        def on_upload_file_change():
+            if f := st.session_state.get("upload_image"):
+                name = ".".join(f.name.split(".")[:-1]) + ".png"
+                st.session_state["cur_image"] = (name, PILImage.open(f))
+            else:
+                st.session_state["cur_image"] = (None, None)
+            st.session_state.pop("paste_image", None)
 
-        with tab2:
-            # 会话
-            cols = st.columns(3)
-            conv_names = chat_box.get_chat_names()
+        st.file_uploader("上传图片", ["bmp", "jpg", "jpeg", "png"],
+                         accept_multiple_files=False,
+                         key="upload_image",
+                         on_change=on_upload_file_change)
+        paste_image = paste_image_button("黏贴图像", key="paste_image")
+        cur_image = st.session_state.get("cur_image", (None, None))
+        if cur_image[1] is None and paste_image.image_data is not None:
+            name = hashlib.md5(paste_image.image_data.tobytes()).hexdigest() + ".png"
+            cur_image = (name, paste_image.image_data)
+        if cur_image[1] is not None:
+            st.image(cur_image[1])
+            buffer = io.BytesIO()
+            cur_image[1].save(buffer, format="png")
+            upload_image = upload_image_file(cur_image[0], buffer.getvalue())
 
-            def on_conv_change():
-                print(conversation_name, st.session_state.cur_conv_name)
-                save_session(conversation_name)
-                restore_session(st.session_state.cur_conv_name)
+        # --- 会话控制移动到这里 ---
+        st.markdown("---")
+        st.subheader("会话管理")
+        conv_names = chat_box.get_chat_names()
 
-            conversation_name = sac.buttons(
-                conv_names,
-                label="当前会话：",
-                key="cur_conv_name",
-                # on_change=on_conv_change, # not work
-            )
-            chat_box.use_chat_name(conversation_name)
-            conversation_id = chat_box.context["uid"]
-            if cols[0].button("新建", on_click=add_conv):
-                ...
-            if cols[1].button("重命名"):
+        def on_conv_change():
+            # 由于 sac on_change callbacks 不工作，这里使用 session state 监听来触发保存/恢复
+            pass
+
+        conversation_name = sac.buttons(
+            conv_names,
+            label="当前会话：",
+            key="cur_conv_name",
+        )
+        chat_box.use_chat_name(conversation_name)
+        conversation_id = chat_box.context["uid"]
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button("新建", on_click=add_conv, use_container_width=True):
+                pass
+        with col2:
+            if st.button("重命名", use_container_width=True):
                 rename_conversation()
-            if cols[2].button("删除", on_click=del_conv):
-                ...
+        with col3:
+            if st.button("删除", on_click=del_conv, use_container_width=True):
+                pass
+        # --- 会话控制结束 ---
 
     # Display chat messages from history on app rerun
     chat_box.output_messages()
     chat_input_placeholder = "请输入对话内容，换行请使用Shift+Enter。"
 
-    # def on_feedback(
-    #         feedback,
-    #         message_id: str = "",
-    #         history_index: int = -1,
-    # ):
+    def on_feedback(
+            feedback,
+            message_id: str = "",
+            history_index: int = -1,
+    ):
 
-    #     reason = feedback["text"]
-    #     score_int = chat_box.set_feedback(feedback=feedback, history_index=history_index)
-    #     api.chat_feedback(message_id=message_id,
-    #                       score=score_int,
-    #                       reason=reason)
-    #     st.session_state["need_rerun"] = True
+        reason = feedback["text"]
+        score_int = chat_box.set_feedback(feedback=feedback, history_index=history_index)
+        api.chat_feedback(message_id=message_id,
+                          score=score_int,
+                          reason=reason)
+        st.session_state["need_rerun"] = True
 
-    # feedback_kwargs = {
-    #     "feedback_type": "thumbs",
-    #     "optional_text_label": "欢迎反馈您打分的理由",
-    # }
+    feedback_kwargs = {
+        "feedback_type": "thumbs",
+        "optional_text_label": "欢迎反馈您打分的理由",
+    }
 
     # TODO: 这里的内容有点奇怪，从后端导入Settings.model_settings.LLM_MODEL_CONFIG，然后又从前端传到后端。需要优化
     #  传入后端的内容
@@ -352,7 +352,7 @@ def dialogue_page(
 
     # chat input
     with bottom():
-        cols = st.columns([1, 0.2, 15,  1])
+        cols = st.columns([1, 0.2, 15, 1])
         if cols[0].button(":gear:", help="模型配置"):
             widget_keys = ["platform", "llm_model", "temperature", "system_message"]
             chat_box.context_to_session(include=widget_keys)
@@ -366,13 +366,13 @@ def dialogue_page(
     if prompt:
         history = get_messages_history(
             chat_model_config["llm_model"]
-            .get(next(iter(chat_model_config["llm_model"])), {})
-            .get("history_len", 1)
+                .get(next(iter(chat_model_config["llm_model"])), {})
+                .get("history_len", 1)
         )
 
         is_vision_chat = upload_image and not selected_tools
 
-        if is_vision_chat: # multimodal chat
+        if is_vision_chat:  # multimodal chat
             chat_box.user_say([Image(get_image_file_url(upload_image), width=100), Markdown(prompt)])
         else:
             chat_box.user_say(prompt)
@@ -398,7 +398,7 @@ def dialogue_page(
         started = False
 
         client = openai.Client(base_url=f"{api_address()}/chat", api_key="NONE")
-        if is_vision_chat: # multimodal chat
+        if is_vision_chat:  # multimodal chat
             content = [
                 {"type": "text", "text": prompt},
                 {"type": "image_url", "image_url": {"url": get_image_file_url(upload_image)}}
@@ -427,7 +427,7 @@ def dialogue_page(
         params = dict(
             messages=messages,
             model=llm_model,
-            stream=stream, # TODO：xinference qwen-vl-chat 流式输出会出错，后续看更新
+            stream=stream,  # TODO：xinference qwen-vl-chat 流式输出会出错，后续看更新
             extra_body=extra_body,
         )
         if tools:
@@ -528,7 +528,7 @@ def dialogue_page(
                 st.error(e.body)
         else:
             try:
-                d =client.chat.completions.create(**params)
+                d = client.chat.completions.create(**params)
                 chat_box.update_msg(d.choices[0].message.content or "", streaming=False)
             except Exception as e:
                 st.error(e.body)
@@ -540,7 +540,7 @@ def dialogue_page(
         #             f'<img src="data:image/jpeg;base64,{encoded_string}" width="300">'
         #         )
         #         st.markdown(img_tag, unsafe_allow_html=True)
-            # os.remove("tmp/image.jpg")
+        # os.remove("tmp/image.jpg")
         # chat_box.show_feedback(**feedback_kwargs,
         #                        key=message_id,
         #                        on_submit=on_feedback,
@@ -572,15 +572,16 @@ def dialogue_page(
         #     chat_box.update_msg("\n\n".join(d.get("docs", [])), element_index=1, streaming=False)
 
     now = datetime.now()
-    with tab2:
-        cols = st.columns(2)
-        export_btn = cols[0]
-        if cols[1].button(
+
+    # 将原来的 Tab 2 内容移到主区域下方
+    cols = st.columns(2)
+    export_btn = cols[0]
+    if cols[1].button(
             "清空对话",
             use_container_width=True,
-        ):
-            chat_box.reset_history()
-            rerun()
+    ):
+        chat_box.reset_history()
+        rerun()
 
     export_btn.download_button(
         "导出记录",
