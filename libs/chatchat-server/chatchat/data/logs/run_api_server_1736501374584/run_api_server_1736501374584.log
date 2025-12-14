@@ -1,2 +1,0 @@
-2025-01-10 17:30:25,631 langchain_community.vectorstores.milvus 31388 ERROR    Failed to create new connection using: a75cb4896e234e81bf6215d42daeb424
-2025-01-10 17:30:50,611 langchain_community.vectorstores.milvus 31388 ERROR    Failed to create new connection using: 3950d960645946e693ee8143e07de182
