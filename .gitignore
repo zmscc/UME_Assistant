@@ -1,2 +1,8 @@
-**/logs
-**/log
+libs/chatchat-server/chatch/at/data/logs/
+# 忽略整个 logs 目录下的所有内容
+/libs/chatchat-server/chatchat/data/logs/**
+# 忽略所有 .log 文件
+*.log
+
+# 忽略 logs 目录下的所有内容（无论在哪）
+**/logs/**
