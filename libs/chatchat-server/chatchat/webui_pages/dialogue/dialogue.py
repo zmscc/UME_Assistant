@@ -23,7 +23,10 @@ from chatchat.server.knowledge_base.utils import format_reference
 from chatchat.server.utils import MsgType, get_config_models, get_config_platforms, get_default_llm
 from chatchat.webui_pages.utils import *
 
-chat_box = ChatBox(assistant_avatar=get_img_base64("chatchat_icon_blue_square_v2.png"))
+chat_box = ChatBox(
+    assistant_avatar=get_img_base64("chatchat_icon_blue_square_v2.png"),
+    user_avatar = "🙂"
+)
 
 
 def save_session(conv_name: str = None):
