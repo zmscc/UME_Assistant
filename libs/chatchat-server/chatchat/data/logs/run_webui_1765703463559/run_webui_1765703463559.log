@@ -1,0 +1,5 @@
+2025-12-14 17:11:51,606 httpx        2904 INFO     HTTP Request: GET http://127.0.0.1:7861/knowledge_base/list_knowledge_bases "HTTP/1.1 200 OK"
+2025-12-14 17:12:00,699 httpx        2904 INFO     HTTP Request: GET http://127.0.0.1:7861/knowledge_base/list_knowledge_bases "HTTP/1.1 200 OK"
+2025-12-14 17:12:00,996 httpx        2904 INFO     HTTP Request: GET http://127.0.0.1:7861/knowledge_base/list_knowledge_bases "HTTP/1.1 200 OK"
+2025-12-14 17:12:15,999 httpx        2904 INFO     HTTP Request: GET http://127.0.0.1:7861/knowledge_base/list_knowledge_bases "HTTP/1.1 200 OK"
+2025-12-14 17:12:20,736 httpx        2904 INFO     HTTP Request: POST http://127.0.0.1:7861/knowledge_base/local_kb/20250908/chat/completions "HTTP/1.1 200 OK"
