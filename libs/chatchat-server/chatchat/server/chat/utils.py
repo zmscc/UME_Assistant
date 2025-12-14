@@ -13,28 +13,20 @@ logger = build_logger()
 
 
 class History(BaseModel):
-    """
-    对话历史
-    可从dict生成，如
-    h = History(**{"role":"user","content":"你好"})
-    也可转换为tuple，如
-    h.to_msy_tuple = ("human", "你好")
-    """
-
-    role: str = Field(...) # Field(...) 是 pydantic 库的一个功能，用于为字段提供额外的配置，比如默认值、别名、验证器等。
+    role: str = Field(...) # Field(...)在 Pydantic 中表示该字段是必需的，不能缺失。
     content: str = Field(...)
 
-    def to_msg_tuple(self):
+    def to_msg_tuple(self): # 创建一个二元组，用于表示对话历史消息。
         return "ai" if self.role == "assistant" else "human", self.content
 
-    def to_msg_template(self, is_raw=True) -> ChatMessagePromptTemplate:
+    def to_msg_template(self, is_raw=True) -> ChatMessagePromptTemplate: # 把一条对话历史消息转换成一个可用于提示词（prompt）模板的对象
         role_maps = {
             "ai": "assistant",
             "human": "user",
         }
-        role = role_maps.get(self.role, self.role)
-        if is_raw:  # 当前默认历史消息都是没有input_variable的文本。
-            content = "{% raw %}" + self.content + "{% endraw %}"
+        role = role_maps.get(self.role, self.role) # dict.get(键, 默认值)，如果键存在，就返回对应的值；如果键不存在，则返回默认值。
+        if is_raw:
+            content = "{% raw %}" + self.content + "{% endraw %}" # {% raw %}...{% endraw %} 包起来，给到jinja2处理时表示这段内容请原样输出，不要当模板解析！
         else:
             content = self.content
 

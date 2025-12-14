@@ -94,11 +94,11 @@ class BasicSettings(BaseFileSettings):
     """知识库默认存储路径"""
 
     # DB_ROOT_PATH: str = str(CHATCHAT_ROOT / "data/knowledge_base/info.db") # todo 原
-    DB_ROOT_PATH: str = "mysql+pymysql://root:123@192.168.150.101:3306/Assistant"
+    DB_ROOT_PATH: str = "mysql+pymysql://root:123456@192.168.200.130:3306/Assistant"
     """数据库默认存储路径。如果使用sqlite，可以直接修改DB_ROOT_PATH；如果使用其它数据库，请直接修改SQLALCHEMY_DATABASE_URI。"""
 
     # SQLALCHEMY_DATABASE_URI:str = "sqlite:///" + str(CHATCHAT_ROOT / "data/knowledge_base/info.db") # todo 原
-    SQLALCHEMY_DATABASE_URI: str = "mysql+pymysql://root:123@192.168.150.101:3306/Assistant"
+    SQLALCHEMY_DATABASE_URI: str = "mysql+pymysql://root:123456@192.168.200.130:3306/Assistant"
     """知识库信息数据库连接URI"""
 
     OPEN_CROSS_DOMAIN: bool = False
@@ -157,7 +157,7 @@ class KBSettings(BaseFileSettings):
     VECTOR_SEARCH_TOP_K: int = 3 # TODO: 与 tool 配置项重复
     """知识库匹配向量数量"""
 
-    SCORE_THRESHOLD: float = 2.0
+    SCORE_THRESHOLD: float = 1.0
     """知识库匹配相关度阈值，取值范围在0-2之间，SCORE越小，相关度越高，取到2相当于不筛选，建议设置在0.5左右"""
 
     DEFAULT_SEARCH_ENGINE: t.Literal["bing", "duckduckgo", "metaphor", "searx"] = "duckduckgo"

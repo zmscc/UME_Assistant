@@ -18,7 +18,7 @@ from chatchat.settings import Settings
 
 
 # 假设你的 MySQL 用户名是 'myuser', 密码是 'mypass', 数据库名是 'mydb'
-SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:123@192.168.150.101:3306/Assistant"
+SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:123456@192.168.200.130:3306/Assistant"
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URI,

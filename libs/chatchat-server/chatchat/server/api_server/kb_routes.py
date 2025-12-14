@@ -26,7 +26,7 @@ from chatchat.server.knowledge_base.kb_summary_api import (
     summary_doc_ids_to_vector_store,
     summary_file_to_vector_store,
 )
-from chatchat.server.utils import BaseResponse, ListResponse
+from chatchat.server.utils import BaseResponse, ListResponse, logger
 from chatchat.server.knowledge_base.kb_cache.faiss_cache import memo_faiss_pool
 
 
@@ -64,6 +64,7 @@ async def kb_chat_endpoint(
         return_direct=extra.get("return_direct", False),
         request=request,
     )
+    logger.info(f"kb_chat_endpoint returning type: {type(ret)}, content: {str(ret)[:200]}")
     return ret
 
 

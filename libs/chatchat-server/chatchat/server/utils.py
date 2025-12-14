@@ -67,12 +67,6 @@ def get_config_platforms() -> Dict[str, Dict]:
 
 @cached(max_size=10, ttl=60, algorithm=CachingAlgorithmFlag.LRU) # 使用缓存来避免在短时间内发送过多请求，以及避免对每个模型多次请求同一平台。缓存会在一分钟之后失效。
 def detect_xf_models(xf_url: str) -> Dict[str, List[str]]: # 定义了 detect_xf_models 函数，它接受一个字符串参数 xf_url（Xinference 服务的 URL），并返回一个字典，字典的键是模型类型，值是该类型模型的列表。
-    '''
-    use cache for xinference model detecting to avoid:
-    - too many requests in short intervals
-    - multiple requests to one platform for every model
-    the cache will be invalidated after one minute
-    '''
     xf_model_type_maps = {
         "llm_models": lambda xf_models: [k for k, v in xf_models.items()
                                         if "LLM" == v["model_type"]
@@ -120,18 +114,6 @@ def get_config_models(
         ]] = None,
         platform_name: str = None,
 ) -> Dict[str, Dict]: # 函数的返回值是一个字典，其中每个键是模型名称，每个值是一个包含模型详细信息的字典
-    """
-    获取配置的模型列表，返回值为:
-    {model_name: {
-        "platform_name": xx,
-        "platform_type": xx,
-        "model_type": xx,
-        "model_name": xx,
-        "api_base_url": xx,
-        "api_key": xx,
-        "api_proxy": xx,
-    }}
-    """
     result = {} # 初始化一个空字典，用于存储筛选后的模型配置。
     if model_type is None: # 如果未提供 model_type 参数，则设置一个包含所有模型类型名称的列表 model_types。
         model_types = [
@@ -155,8 +137,8 @@ def get_config_models(
             if not m.get("platform_type") == "xinference":  # TODO：当前仅支持 xf 自动检测模型
                 logger.warning(f"auto_detect_model not supported for {m.get('platform_type')} yet")
                 continue
-            xf_url = get_base_url(m.get("api_base_url"))
-            xf_models = detect_xf_models(xf_url)
+            xf_url = get_base_url(m.get("api_base_url")) # 获取 xinference 服务的 API 基础 URL。
+            xf_models = detect_xf_models(xf_url) # 传入 xinference 服务的 URL，获取模型列表。
             for m_type in model_types:
                 # if m.get(m_type) != "auto":
                 #     continue
@@ -199,7 +181,7 @@ def get_model_info(
     else:
         return {}
 
-'''获取默认的大语言模型'''
+'''调用xinferenceAPI获取默认的大语言模型'''
 def get_default_llm():
     available_llms = list(get_config_models(model_type="llm").keys()) # 调用函数，传入参数 model_type="llm" 来获取所有配置的语言模型，并将它们的键（即模型名称）转换成列表
     if Settings.model_settings.DEFAULT_LLM_MODEL in available_llms: # 检查默认的语言模型（通过 Settings.model_settings.DEFAULT_LLM_MODEL 获取）是否在可用的语言模型列表中
@@ -209,7 +191,7 @@ def get_default_llm():
                        f"using {available_llms[0]} instead") # 如果默认语言模型不在可用列表中，记录一条警告信息，并使用列表中的第一个模型作为默认模型。
         return available_llms[0] # 返回列表中的第一个语言模型作为默认模型。
 
-'''获取默认嵌入模型'''
+'''调用xinferenceAPI获取默认嵌入模型'''
 def get_default_embedding():
     available_embeddings = list(get_config_models(model_type="embed").keys()) # 调用函数，传入参数 model_type="embed" 来获取所有配置的嵌入模型，并将它们的键（即模型名称）转换成列表。
     if Settings.model_settings.DEFAULT_EMBEDDING_MODEL in available_embeddings:
@@ -676,7 +658,9 @@ def get_prompt_template(type: str, name: str) -> Optional[str]:
 
     return Settings.prompt_settings.model_dump().get(type, {}).get(name)
 
-
+'''
+这是一个典型的 “为大模型应用定制网络行为”的工具函数，解决的是实际部署中的常见痛点：超时太短、代理冲突、本地服务绕行。
+'''
 def set_httpx_config(
         timeout: float = Settings.basic_settings.HTTPX_DEFAULT_TIMEOUT,
         proxy: Union[str, Dict] = None,

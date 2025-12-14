@@ -68,3 +68,5 @@
 2024-12-24 13:39:58.033 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
 2024-12-24 13:39:58.033 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
 2024-12-24 13:39:58.434 | WARNING  | chatchat.server.utils:get_default_embedding:218 - default embedding model bge-m3 is not found in available embeddings, using quentinz/bge-large-zh-v1.5 instead
+2025-09-07 17:44:49.895 | WARNING  | chatchat.server.utils:detect_xf_models:106 - auto_detect_model needs xinference-client installed. Please try "pip install xinference-client". 
+2025-09-07 17:44:49.895 | WARNING  | chatchat.server.utils:get_default_llm:208 - default llm model glm4-chat is not found in available llms, using qwen:7b instead
